@@ -25,7 +25,7 @@ interface UserProfile {
     tipo: 'aluno' | 'professor';
 }
 
-export default function AdminDashboard() {
+function AdminContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("inicio");
@@ -255,4 +255,14 @@ function StatusCard({ label, value, color }: { label: string, value: string, col
              <h3 className={cn("text-4xl font-black tracking-tighter", color)}>{value}</h3>
         </GlassCard>
     );
+}
+
+import { Suspense } from "react";
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div className="p-8 text-white">Carregando...</div>}>
+      <AdminContent />
+    </Suspense>
+  );
 }
