@@ -1,9 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Shield, FileText, MessageSquare, CheckCircle } from "lucide-react";
+import { Users, Shield, FileText, MessageSquare, CheckCircle, Send } from "lucide-react";
 import GlassCard from "@/components/GlassCard";
 import BackButton from "@/components/BackButton";
+import { useSchoolStore } from "@/lib/store";
+import { useState } from "react";
+import { TURMAS_COLS } from "@/lib/schedule";
 
 interface UserProfile {
     id: string;
@@ -15,6 +18,17 @@ interface UserProfile {
 }
 
 export default function AdminDashboard() {
+  const { addRecado, showToast } = useSchoolStore();
+  const [selectedTurma, setSelectedTurma] = useState("9º A");
+  const [novoRecado, setNovoRecado] = useState("");
+
+  const handleEnviarRecado = async () => {
+    if (!novoRecado.trim()) return;
+    await addRecado(selectedTurma, novoRecado);
+    showToast(`📢 Recado enviado para ${selectedTurma}`);
+    setNovoRecado("");
+  };
+
   const usuarios: UserProfile[] = [
     { id: "1", nome: "Ana Beatriz", email: "ana@escola.com", turma: "9º B", codigo: "ALUN-X8B9", tipo: 'aluno' },
     { id: "2", nome: "Prof. Alexandre", email: "alexandre@escola.com", turma: "Multiturma", codigo: "PROF-YZ01", tipo: 'professor' },
@@ -101,6 +115,36 @@ export default function AdminDashboard() {
               </div>
             </div>
           ))}
+        </div>
+      </GlassCard>
+
+      {/* Enviar Recado */}
+      <GlassCard className="p-4 mb-6">
+        <h3 className="font-black mb-4 flex items-center gap-2">
+          <Send className="w-5 h-5 text-amber-400" />
+          Enviar Recado
+        </h3>
+        <div className="flex gap-2">
+          <select 
+            value={selectedTurma} 
+            onChange={(e) => setSelectedTurma(e.target.value)}
+            className="bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-sm border border-slate-700"
+          >
+            {TURMAS_COLS.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input 
+            type="text"
+            value={novoRecado}
+            onChange={(e) => setNovoRecado(e.target.value)}
+            placeholder="Escreva o recado..."
+            className="flex-1 bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-sm border border-slate-700"
+          />
+          <button 
+            onClick={handleEnviarRecado}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2"
+          >
+            <Send className="w-4 h-4" />
+          </button>
         </div>
       </GlassCard>
 
