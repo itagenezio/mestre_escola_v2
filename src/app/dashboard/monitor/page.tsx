@@ -19,9 +19,13 @@ export default function MonitorTV() {
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     const daysMap = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-    const today = daysMap[now.getDay()];
-    if (now.getDay() === 0 || now.getDay() === 6) setCurrentDia("Segunda");
-    else setCurrentDia(today);
+    const dayNum = now.getDay();
+    // Se for fim de semana, mostra Quarta por padrão
+    if (dayNum === 0 || dayNum === 6) {
+      setCurrentDia("Quarta");
+    } else {
+      setCurrentDia(daysMap[dayNum]);
+    }
     return () => clearInterval(timer);
   }, [now]);
 
@@ -76,24 +80,29 @@ export default function MonitorTV() {
                                 <span className="text-indigo-400 font-bold text-xs">{aula.inicio}</span>
                                 <span className="text-[8px] text-slate-600 font-black uppercase">Aula {aula.id}</span>
                              </div>
-                             {TURMAS_COLS.map((_, idx) => {
-                                 const item = SCHEDULE_DATA[currentDia]?.[aula.id]?.[idx] || "—";
-                                 const [prof, mat] = item.split('(');
-                                 const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                                 
-                                 return (
-                                     <div 
-                                        key={idx} 
-                                        className={cn(
-                                            "p-2 rounded-xl border flex flex-col justify-center transition-all",
-                                            isFree ? "bg-amber-500/5 border-amber-500/10" : "bg-white/5 border-white/10 group-hover:bg-white-[8%]"
-                                        )}
-                                     >
-                                        <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/50" : "text-white")}>{prof}</p>
-                                        <p className="text-[8px] font-bold text-slate-600 uppercase mt-0.5 truncate">{mat?.replace(')', '') || ""}</p>
-                                     </div>
-                                 );
-                             })}
+                              {TURMAS_COLS.map((_, idx) => {
+                                  const item = SCHEDULE_DATA[currentDia]?.[aula.id]?.[idx] || "—";
+                                  const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                                  const isInterval = item === "INTERVALO" || item === "—";
+                                  
+                                  // Separa professor e matéria
+                                  const parts = item.split(' - ');
+                                  const prof = parts[0] || item;
+                                  const mat = parts.slice(1).join(' - ') || "";
+                                  
+                                  return (
+                                      <div 
+                                         key={idx} 
+                                         className={cn(
+                                             "p-2 rounded-xl border flex flex-col justify-center transition-all",
+                                             isInterval ? "bg-slate-900/50 border-slate-800" : isFree ? "bg-amber-500/5 border-amber-500/10" : "bg-white/5 border-white/10 group-hover:bg-white-[8%]"
+                                         )}
+                                      >
+                                         <p className={cn("text-[10px] font-black leading-tight", isInterval ? "text-slate-700" : isFree ? "text-amber-500/50" : "text-white")}>{prof}</p>
+                                         <p className="text-[8px] font-bold text-slate-600 uppercase mt-0.5 truncate">{mat}</p>
+                                      </div>
+                                  );
+                              })}
                         </div>
                     ))}
                </div>
