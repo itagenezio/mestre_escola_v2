@@ -15,7 +15,12 @@ import { playNotification } from "@/lib/notify";
 
 export default function StudentDashboard() {
   const store = useSchoolStore();
+  const { recados, fetchFromSupabase } = store;
   const userName = store.userName || "Aluno";
+
+  useEffect(() => {
+    fetchFromSupabase();
+  }, []);
   
   const [minhaTurma, setMinhaTurma] = useState("9º B"); 
   const [horarioHoje, setHorarioHoje] = useState<{aula: string; horario: string; materia: string}[]>([]);

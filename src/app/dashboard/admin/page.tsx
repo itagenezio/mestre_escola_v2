@@ -5,7 +5,7 @@ import { Users, Shield, FileText, MessageSquare, CheckCircle, Send } from "lucid
 import GlassCard from "@/components/GlassCard";
 import BackButton from "@/components/BackButton";
 import { useSchoolStore } from "@/lib/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TURMAS_COLS } from "@/lib/schedule";
 
 interface UserProfile {
@@ -18,10 +18,14 @@ interface UserProfile {
 }
 
 export default function AdminDashboard() {
-  const { addRecado } = useSchoolStore();
+  const { addRecado, recados, fetchFromSupabase } = useSchoolStore();
   const [selectedTurma, setSelectedTurma] = useState("9º A");
   const [novoRecado, setNovoRecado] = useState("");
   const [enviado, setEnviado] = useState(false);
+
+  useEffect(() => {
+    fetchFromSupabase();
+  }, []);
 
   const handleEnviarRecado = async () => {
     if (!novoRecado.trim()) return;
@@ -41,12 +45,6 @@ export default function AdminDashboard() {
     { turma: "9º B", professor: "Ester", atividade: "Redação tema livre", concluidos: 8, total: 25 },
     { turma: "8º A", professor: "Livison", atividade: "Prova de Ed. Física", concluidos: 20, total: 22 },
     { turma: "9º C", professor: "Rocha", atividade: "Simulado Matemática", concluidos: 12, total: 26 },
-  ];
-
-  const recadosDemo = [
-    { turma: "9º A", professor: "Natalia", recado: "Prova adiada para próxima semana", data: "25/03" },
-    { turma: "9º B", professor: "Enilda", recado: "Entregar autorização", data: "24/03" },
-    { turma: "8º C", professor: "Antonio", recado: "Reunião de pais dia 30/03", data: "23/03" },
   ];
 
   return (
@@ -93,7 +91,7 @@ export default function AdminDashboard() {
             <MessageSquare className="w-6 h-6 text-amber-400" />
             <div>
               <p className="text-xs text-slate-500 font-bold uppercase">Recados</p>
-              <p className="text-xl font-black">{recadosDemo.length}</p>
+              <p className="text-xl font-black">{Object.values(recados).flat().length}</p>
             </div>
           </div>
         </GlassCard>
@@ -159,15 +157,20 @@ export default function AdminDashboard() {
           Recados Recentes
         </h3>
         <div className="space-y-3">
-          {recadosDemo.map((r, i) => (
-            <div key={i} className="flex items-center justify-between p-3 bg-slate-900 rounded-xl">
-              <div>
-                <p className="font-bold text-sm">{r.turma}</p>
-                <p className="text-xs text-slate-400">{r.recado}</p>
-              </div>
-              <span className="text-xs text-slate-500">{r.data}</span>
-            </div>
-          ))}
+          {Object.entries(recados).length === 0 ? (
+            <p className="text-slate-500 text-sm">Nenhum recado ainda.</p>
+          ) : (
+            Object.entries(recados).flatMap(([turma, textos]: [string, string[]]) =>
+              textos.map((texto, i) => (
+                <div key={`${turma}-${i}`} className="flex items-center justify-between p-3 bg-slate-900 rounded-xl">
+                  <div>
+                    <p className="font-bold text-sm text-amber-400">{turma}</p>
+                    <p className="text-xs text-slate-400">{texto}</p>
+                  </div>
+                </div>
+              ))
+            )
+          )}
         </div>
       </GlassCard>
     </div>
