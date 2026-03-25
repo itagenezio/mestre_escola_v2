@@ -173,21 +173,17 @@ export default function MonitorTV() {
                             </span>
                           )}
                         </div>
-                        <div className="grid grid-cols-[60px_repeat(9,1fr)] gap-1 p-2">
+                        <div className="grid grid-cols-[90px_repeat(9,1fr)] gap-1 p-2">
                           {TURMAS_COLS.map((turma, idx) => {
                             const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
                             const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                            // Normaliza: troca travessão longo por hífen
-                            const itemNorm = item.replace(/[–—]/g, '-').replace(/\s*-\s*/g, ' - ').trim();
-                            const parts = itemNorm.split(' - ');
-                            const prof = parts[0] || item;
                             
                             return (
                               <div key={idx} className={cn(
-                                "p-1.5 rounded-lg border flex flex-col justify-center",
+                                "p-2 rounded-lg border flex flex-col justify-center min-h-[55px]",
                                 isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
                               )}>
-                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
+                                <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
                               </div>
                             );
                           })}
@@ -230,21 +226,17 @@ export default function MonitorTV() {
                             </span>
                           )}
                         </div>
-                        <div className="grid grid-cols-[60px_repeat(9,1fr)] gap-1 p-2">
+                        <div className="grid grid-cols-[90px_repeat(9,1fr)] gap-1 p-2">
                           {TURMAS_COLS.map((turma, idx) => {
                             const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
                             const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                            // Normaliza: troca travessão longo por hífen
-                            const itemNorm = item.replace(/[–—]/g, '-').replace(/\s*-\s*/g, ' - ').trim();
-                            const parts = itemNorm.split(' - ');
-                            const prof = parts[0] || item;
                             
                             return (
                               <div key={idx} className={cn(
-                                "p-1.5 rounded-lg border flex flex-col justify-center",
+                                "p-2 rounded-lg border flex flex-col justify-center min-h-[55px]",
                                 isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
                               )}>
-                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
+                                <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
                               </div>
                             );
                           })}
