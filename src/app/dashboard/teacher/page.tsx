@@ -38,7 +38,8 @@ export default function TeacherDashboard() {
     const diaEfetivo = SCHEDULE_DATA[today] ? today : "Segunda";
 
     const minhaAgenda = Object.entries(SCHEDULE_DATA[diaEfetivo]).map(([aulaNum, turmas]) => {
-        const idx = turmas.findIndex(t => t.includes(profName));
+        const profUpper = profName.toUpperCase();
+        const idx = turmas.findIndex(t => t.toUpperCase().includes(profUpper));
         if (idx !== -1) {
             const h = HORARIOS_AULAS.find(a => a.id.toString() === aulaNum);
             return { aula: aulaNum, turma: TURMAS_COLS[idx], horario: h?.inicio || "" };
