@@ -18,15 +18,17 @@ interface UserProfile {
 }
 
 export default function AdminDashboard() {
-  const { addRecado, showToast } = useSchoolStore();
+  const { addRecado } = useSchoolStore();
   const [selectedTurma, setSelectedTurma] = useState("9º A");
   const [novoRecado, setNovoRecado] = useState("");
+  const [enviado, setEnviado] = useState(false);
 
   const handleEnviarRecado = async () => {
     if (!novoRecado.trim()) return;
     await addRecado(selectedTurma, novoRecado);
-    showToast(`📢 Recado enviado para ${selectedTurma}`);
+    setEnviado(true);
     setNovoRecado("");
+    setTimeout(() => setEnviado(false), 2000);
   };
 
   const usuarios: UserProfile[] = [
@@ -141,9 +143,11 @@ export default function AdminDashboard() {
           />
           <button 
             onClick={handleEnviarRecado}
-            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2"
+            className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-colors ${
+              enviado ? "bg-emerald-500" : "bg-amber-500 hover:bg-amber-600"
+            } text-white`}
           >
-            <Send className="w-4 h-4" />
+            {enviado ? <CheckCircle className="w-4 h-4" /> : <Send className="w-4 h-4" />}
           </button>
         </div>
       </GlassCard>
