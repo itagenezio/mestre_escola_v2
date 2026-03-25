@@ -15,8 +15,10 @@ import { cn } from "@/lib/utils";
 import { playNotification } from "@/lib/notify";
 import { useSchoolStore } from "@/lib/store";
 import { HORARIOS_AULAS, SCHEDULE_DATA, TURMAS_COLS } from "@/lib/schedule";
+import { useClassNotifications } from "@/hooks/useClassNotifications";
 
 export default function TeacherDashboard() {
+  useClassNotifications();
   const atividades = useSchoolStore((state) => state.atividades);
   const recados = useSchoolStore((state) => state.recados);
   const userName = useSchoolStore((state) => state.userName);
