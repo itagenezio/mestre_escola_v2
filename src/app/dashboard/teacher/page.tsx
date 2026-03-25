@@ -17,12 +17,19 @@ import { useSchoolStore } from "@/lib/store";
 import { HORARIOS_AULAS, SCHEDULE_DATA, TURMAS_COLS } from "@/lib/schedule";
 
 export default function TeacherDashboard() {
-  const { atividades, recados, setAtividade, addRecado, vistos, concluidos, userName, fetchFromSupabase } = useSchoolStore();
+  const atividades = useSchoolStore((state) => state.atividades);
+  const recados = useSchoolStore((state) => state.recados);
+  const userName = useSchoolStore((state) => state.userName);
+  const setAtividade = useSchoolStore((state) => state.setAtividade);
+  const addRecado = useSchoolStore((state) => state.addRecado);
+  const fetchFromSupabase = useSchoolStore((state) => state.fetchFromSupabase);
   const profName = userName !== "Usuário" ? userName : "Professor(a)";
+  const vistos = useSchoolStore((state) => state.vistos);
+  const concluidos = useSchoolStore((state) => state.concluidos);
 
   useEffect(() => {
     fetchFromSupabase();
-  }, []);
+  }, [fetchFromSupabase]);
   const [selectedTurma, setSelectedTurma] = useState("9º B");
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'info' } | null>(null);
   

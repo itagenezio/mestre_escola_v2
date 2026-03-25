@@ -14,13 +14,14 @@ import { cn } from "@/lib/utils";
 import { playNotification } from "@/lib/notify";
 
 export default function StudentDashboard() {
-  const store = useSchoolStore();
-  const { recados, fetchFromSupabase } = store;
-  const userName = store.userName || "Aluno";
+  const recados = useSchoolStore((state) => state.recados);
+  const atividades = useSchoolStore((state) => state.atividades);
+  const userName = useSchoolStore((state) => state.userName);
+  const fetchFromSupabase = useSchoolStore((state) => state.fetchFromSupabase);
 
   useEffect(() => {
     fetchFromSupabase();
-  }, []);
+  }, [fetchFromSupabase]);
   
   const [minhaTurma, setMinhaTurma] = useState("9º B"); 
   const [horarioHoje, setHorarioHoje] = useState<{aula: string; horario: string; materia: string}[]>([]);
@@ -68,13 +69,14 @@ export default function StudentDashboard() {
     setConfirmou(false);
   }, [minhaTurma, diaSemana]);
 
-  const minhaAtividade = store.atividades[minhaTurma] || null;
-  const meusRecados = store.recados[minhaTurma] || [];
+  const minhaAtividade = atividades[minhaTurma] || null;
+  const meusRecados = recados[minhaTurma] || [];
+  const marcarConcluido = useSchoolStore((state) => state.marcarConcluido);
 
   const handleConfirmar = () => {
     setConfirmou(true);
-    if (store.marcarConcluido) {
-      store.marcarConcluido(minhaTurma, userName);
+    if (marcarConcluido) {
+      marcarConcluido(minhaTurma, userName);
       playNotification("success");
     }
   };

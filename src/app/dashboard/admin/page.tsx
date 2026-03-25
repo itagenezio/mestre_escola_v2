@@ -18,14 +18,16 @@ interface UserProfile {
 }
 
 export default function AdminDashboard() {
-  const { addRecado, recados, fetchFromSupabase } = useSchoolStore();
+  const addRecado = useSchoolStore((state) => state.addRecado);
+  const recados = useSchoolStore((state) => state.recados);
+  const fetchFromSupabase = useSchoolStore((state) => state.fetchFromSupabase);
   const [selectedTurma, setSelectedTurma] = useState("9º A");
   const [novoRecado, setNovoRecado] = useState("");
   const [enviado, setEnviado] = useState(false);
 
   useEffect(() => {
     fetchFromSupabase();
-  }, []);
+  }, [fetchFromSupabase]);
 
   const handleEnviarRecado = async () => {
     if (!novoRecado.trim()) return;
