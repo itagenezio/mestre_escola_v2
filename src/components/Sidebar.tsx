@@ -41,13 +41,17 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { userRole, userName } = useSchoolStore();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setIsCollapsed(!mobile);
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -65,12 +69,14 @@ export default function Sidebar() {
 
   return (
     <>
-      <button 
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="md:hidden fixed bottom-4 right-4 z-[60] bg-indigo-600 p-4 rounded-full shadow-lg"
-      >
-        {isCollapsed ? <Menu className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
-      </button>
+      {isMobile && (
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="md:hidden fixed bottom-4 right-4 z-[60] bg-indigo-600 p-4 rounded-full shadow-lg"
+        >
+          {isCollapsed ? <Menu className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
+        </button>
+      )}
 
       {!isCollapsed && isMobile && (
         <div 
@@ -81,7 +87,11 @@ export default function Sidebar() {
 
       <div className={cn(
         "bg-slate-950 border-r border-white/5 flex flex-col transition-all duration-500 fixed md:relative z-50 h-screen",
-        isCollapsed ? "w-16 -translate-x-full md:translate-x-0 md:w-16" : "w-72"
+        isCollapsed 
+          ? "w-16 -translate-x-full md:translate-x-0 md:w-16" 
+          : isMobile 
+            ? "w-72 translate-x-0" 
+            : "w-72"
       )}>
       <div className="p-8 flex items-center gap-4">
         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
