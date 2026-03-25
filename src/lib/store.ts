@@ -81,9 +81,18 @@ export const useSchoolStore = create<SchoolStore>()(
 
       addRecado: async (turma, texto) => {
         set((state) => ({
-          recados: { ...state.recados, [turma]: [texto, ...(state.recados[turma] || [])].slice(0, 5) }
+          recados: { 
+            ...state.recados, 
+            [turma]: turma === 'PROFESSORES' 
+              ? [texto, ...(state.recados['PROFESSORES'] || [])].slice(0, 5)
+              : [texto, ...(state.recados[turma] || [])].slice(0, 5) 
+          }
         }));
-        await supabase.from('posts').insert({ turma, type: 'recado', content: texto });
+        await supabase.from('posts').insert({ 
+          turma, 
+          type: 'recado', 
+          content: texto 
+        });
       },
 
       marcarLido: async (idRecado, aluno) => {

@@ -132,7 +132,8 @@ export default function AdminDashboard() {
             onChange={(e) => setSelectedTurma(e.target.value)}
             className="bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-sm border border-slate-700"
           >
-            {TURMAS_COLS.map(t => <option key={t} value={t}>{t}</option>)}
+            <option value="PROFESSORES">👨‍🏫 Todos os Professores</option>
+            {TURMAS_COLS.map(t => <option key={t} value={t}>📚 {t}</option>)}
           </select>
           <input 
             type="text"

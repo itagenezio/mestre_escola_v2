@@ -214,10 +214,26 @@ export default function TeacherDashboard() {
                         color="text-emerald-400" 
                         sub="Alunos concluíram" 
                     />
-                 </div>
-              </section>
-          </div>
-      </div>
+                  </div>
+               </section>
+
+               {/* Recados da Coordenação */}
+               <section>
+                  <h2 className="text-2xl font-black mb-6">📢 Recados da Coordenação</h2>
+                  <div className="space-y-4">
+                    {recados['PROFESSORES']?.length > 0 ? (
+                      recados['PROFESSORES'].map((r, i) => (
+                        <GlassCard key={i} className="border-l-4 border-amber-500 p-4">
+                          <p className="text-white text-sm">{r}</p>
+                        </GlassCard>
+                      ))
+                    ) : (
+                      <p className="text-slate-500">Nenhum recado da coordenação.</p>
+                    )}
+                  </div>
+               </section>
+           </div>
+       </div>
     </div>
   );
 }
