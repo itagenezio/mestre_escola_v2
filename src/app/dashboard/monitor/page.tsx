@@ -1,0 +1,133 @@
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Clock, MapPin, Monitor, 
+  Calendar, AlertCircle, LayoutGrid, ChevronRight,
+  Maximize2, Minimize2, Table
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { HORARIOS_AULAS, SCHEDULE_DATA, TURMAS_COLS } from "@/lib/schedule";
+
+export default function MonitorTV() {
+  const [now, setNow] = useState(new Date());
+  const [viewMode, setViewMode] = useState<"auto" | "preview" | "full">("full");
+  const [previewAula, setPreviewAula] = useState("1");
+  const [currentDia, setCurrentDia] = useState("Segunda");
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    const daysMap = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    const today = daysMap[now.getDay()];
+    if (now.getDay() === 0 || now.getDay() === 6) setCurrentDia("Segunda");
+    else setCurrentDia(today);
+    return () => clearInterval(timer);
+  }, [now]);
+
+  const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  
+  // Aulas Válidas (limpa os intervalos para a grade)
+  const aulasValidas = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
+
+  return (
+    <div className="min-h-screen bg-[#020617] text-white p-6 md:p-8 flex flex-col font-sans overflow-hidden">
+      
+      {/* Header Compacto */}
+      <header className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+        <div>
+          <div className="flex items-center gap-2 text-indigo-400 font-black uppercase tracking-[0.2em] text-[10px] mb-1">
+            <Monitor className="w-4 h-4" />
+            Display de Monitoramento Sala dos Professores
+          </div>
+          <div className="flex items-baseline gap-4">
+            <h1 className="text-4xl font-black tracking-tighter">{currentDia}</h1>
+            <span className="text-4xl font-black text-indigo-500">{timeStr}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-slate-800">
+            <NavBtn active={viewMode === "auto"} onClick={() => setViewMode("auto")} icon={<Clock className="w-3 h-3" />} label="Agora" />
+            <NavBtn active={viewMode === "full"} onClick={() => setViewMode("full")} icon={<Table className="w-3 h-3" />} label="Grade do Dia" />
+        </div>
+      </header>
+
+      {/* Área Principal */}
+      <main className="flex-1 overflow-auto scrollbar-none">
+        <AnimatePresence mode="wait">
+          {viewMode === "full" ? (
+            <motion.div 
+               key="full-table"
+               initial={{ opacity: 0, scale: 0.98 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0 }}
+               className="h-full border border-white/5 rounded-[2.5rem] bg-slate-950/40 p-1 overflow-hidden flex flex-col"
+            >
+               {/* Grade Geral de Professores */}
+               <div className="grid grid-cols-[100px_repeat(9,1fr)] bg-slate-900/80 p-4 border-b border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <div>Hora</div>
+                    {TURMAS_COLS.map(t => <div key={t} className="text-center">{t}</div>)}
+               </div>
+               
+               <div className="flex-1 overflow-y-auto space-y-1 p-2">
+                    {aulasValidas.map((aula, i) => (
+                        <div key={aula.id} className="grid grid-cols-[80px_repeat(9,1fr)] gap-1 group">
+                             <div className="bg-slate-900/30 p-3 rounded-xl flex flex-col justify-center items-center border border-transparent group-hover:border-indigo-500/30 transition-colors">
+                                <span className="text-indigo-400 font-bold text-xs">{aula.inicio}</span>
+                                <span className="text-[8px] text-slate-600 font-black uppercase">Aula {aula.id}</span>
+                             </div>
+                             {TURMAS_COLS.map((_, idx) => {
+                                 const item = SCHEDULE_DATA[currentDia]?.[aula.id]?.[idx] || "—";
+                                 const [prof, mat] = item.split('(');
+                                 const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                                 
+                                 return (
+                                     <div 
+                                        key={idx} 
+                                        className={cn(
+                                            "p-2 rounded-xl border flex flex-col justify-center transition-all",
+                                            isFree ? "bg-amber-500/5 border-amber-500/10" : "bg-white/5 border-white/10 group-hover:bg-white-[8%]"
+                                        )}
+                                     >
+                                        <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/50" : "text-white")}>{prof}</p>
+                                        <p className="text-[8px] font-bold text-slate-600 uppercase mt-0.5 truncate">{mat?.replace(')', '') || ""}</p>
+                                     </div>
+                                 );
+                             })}
+                        </div>
+                    ))}
+               </div>
+            </motion.div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-20 text-slate-500 italic">
+                Modo simplificado em desenvolvimento... Clique em "Grade do Dia" acima.
+            </div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      <footer className="mt-4 flex items-center justify-between text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] px-4">
+          <div>Display v3.5 — Sala dos Professores</div>
+          <div className="flex gap-10">
+              <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Sistema Sincronizado</span>
+              <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" /> PDF Processado 100%</span>
+          </div>
+      </footer>
+    </div>
+  );
+}
+
+function NavBtn({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+    return (
+        <button 
+            onClick={onClick}
+            className={cn(
+                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer",
+                active ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/30" : "text-slate-500 hover:text-white"
+            )}
+        >
+            {icon}
+            {label}
+        </button>
+    );
+}
