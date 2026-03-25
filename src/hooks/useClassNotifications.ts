@@ -5,15 +5,8 @@ import { playNotification } from "@/lib/notify";
 import { HORARIOS_AULAS } from "@/lib/schedule";
 
 const AULAS_NOTIFY = [
-  "06:55", // 5 min antes de 07:00
-  "07:45", // 5 min antes de 07:50
-  "08:55", // 5 min antes de 09:00
-  "09:45", // 5 min antes de 09:50
-  "10:35", // 5 min antes de 10:40
-  "12:55", // 5 min antes de 13:00
-  "13:45", // 5 min antes de 13:50
-  "14:55", // 5 min antes de 15:00
-  "15:45", // 5 min antes de 15:50
+  "06:55", // 5 min antes da 1ª aula (07:00) - MANHÃ
+  "12:55", // 5 min antes da 6ª aula (13:00) - TARDE
 ];
 
 export function useClassNotifications() {

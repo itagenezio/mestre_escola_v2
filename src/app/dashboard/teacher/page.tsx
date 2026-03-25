@@ -38,6 +38,46 @@ export default function TeacherDashboard() {
   const [agendaHoje, setAgendaHoje] = useState<{ aula: string; turma: string; horario: string; materia: string }[]>([]);
   const [novaAtiv, setNovaAtiv] = useState("");
   const [novoRecado, setNovoRecado] = useState("");
+  const [proximaAula, setProximaAula] = useState<{ aula: string; turma: string; horario: string; minutos: number } | null>(null);
+
+  // Calcula próxima aula a cada minuto
+  useEffect(() => {
+    const calcProximaAula = () => {
+      const now = new Date();
+      const hora = now.getHours();
+      const min = now.getMinutes();
+      const currentTime = hora * 60 + min;
+
+      const horariosMinutos = [
+        { aula: "1", hora: 7, min: 0 },
+        { aula: "2", hora: 7, min: 50 },
+        { aula: "3", hora: 9, min: 0 },
+        { aula: "4", hora: 9, min: 50 },
+        { aula: "5", hora: 10, min: 40 },
+        { aula: "6", hora: 13, min: 0 },
+        { aula: "7", hora: 13, min: 50 },
+        { aula: "8", hora: 15, min: 0 },
+        { aula: "9", hora: 15, min: 50 },
+      ];
+
+      for (const h of horariosMinutos) {
+        const hMin = h.hora * 60 + h.min;
+        const diff = hMin - currentTime;
+        if (diff > 0 && diff <= 30) {
+          const aulaEncontrada = agendaHoje.find(a => a.aula === h.aula);
+          if (aulaEncontrada) {
+            setProximaAula({ ...aulaEncontrada, minutos: diff });
+            return;
+          }
+        }
+      }
+      setProximaAula(null);
+    };
+
+    calcProximaAula();
+    const interval = setInterval(calcProximaAula, 60000);
+    return () => clearInterval(interval);
+  }, [agendaHoje]);
 
   const showToast = (msg: string, type: 'success' | 'info' = 'success') => {
     setToast({ msg, type });
@@ -98,20 +138,22 @@ export default function TeacherDashboard() {
     <div className="flex flex-col pb-20">
       
       {/* Alarme de Próxima Aula */}
-      <div className="fixed bottom-10 right-10 z-[50]">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            className="bg-indigo-600 p-6 rounded-[2rem] shadow-2xl border border-white/20 flex items-center gap-4"
-          >
-              <div className="bg-white/10 p-3 rounded-xl animate-bounce">
-                <Bell className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                  <p className="text-[10px] font-black uppercase text-indigo-200">Próxima Aula Alarme</p>
-                  <p className="font-bold text-white leading-tight">Aula 2 em 10 min: 9º B</p>
-              </div>
-          </motion.div>
-      </div>
+      {proximaAula && (
+        <div className="fixed bottom-10 right-10 z-[50]">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              className="bg-indigo-600 p-6 rounded-[2rem] shadow-2xl border border-white/20 flex items-center gap-4"
+            >
+                <div className="bg-white/10 p-3 rounded-xl animate-bounce">
+                  <Bell className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                    <p className="text-[10px] font-black uppercase text-indigo-200">Próxima Aula</p>
+                    <p className="font-bold text-white leading-tight">Aula {proximaAula.aula} em {proximaAula.minutos} min: {proximaAula.turma}</p>
+                </div>
+            </motion.div>
+        </div>
+      )}
 
       <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
