@@ -17,8 +17,8 @@ import { useSchoolStore } from "@/lib/store";
 import { HORARIOS_AULAS, SCHEDULE_DATA, TURMAS_COLS } from "@/lib/schedule";
 
 export default function TeacherDashboard() {
-  const { atividades, recados, setAtividade, addRecado, vistos, concluidos } = useSchoolStore();
-  const [profName, setProfName] = useState("Alexandre A"); // Exemplo para teste
+  const { atividades, recados, setAtividade, addRecado, vistos, concluidos, userName } = useSchoolStore();
+  const profName = userName !== "Usuário" ? userName : "Professor(a)";
   const [selectedTurma, setSelectedTurma] = useState("9º B");
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'info' } | null>(null);
   

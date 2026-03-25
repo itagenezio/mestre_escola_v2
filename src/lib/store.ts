@@ -6,6 +6,7 @@ import { supabase } from './supabase';
 
 interface SchoolStore {
   userRole: 'admin' | 'teacher' | 'student';
+  userName: string;
   userClass: string;
   atividades: Record<string, string>; 
   recados: Record<string, string[]>;  
@@ -13,6 +14,7 @@ interface SchoolStore {
   concluidos: Record<string, string[]>; 
   
   setUserRole: (role: 'admin' | 'teacher' | 'student') => void;
+  setUserName: (name: string) => void;
   setUserClass: (turma: string) => void;
   fetchFromSupabase: () => Promise<void>;
   setAtividade: (turma: string, texto: string) => Promise<void>;
@@ -26,6 +28,7 @@ export const useSchoolStore = create<SchoolStore>()(
   persist(
     (set, get) => ({
       userRole: 'admin', // Default role
+      userName: 'Usuário',
       userClass: '9º B',
       atividades: {},
       recados: {},
@@ -33,6 +36,7 @@ export const useSchoolStore = create<SchoolStore>()(
       concluidos: {},
 
       setUserRole: (role) => set({ userRole: role }),
+      setUserName: (name) => set({ userName: name }),
       setUserClass: (turma) => set({ userClass: turma }),
 
       fetchFromSupabase: async () => {
