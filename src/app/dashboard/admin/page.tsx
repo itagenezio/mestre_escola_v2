@@ -32,6 +32,7 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [termoBusca, setTermoBusca] = useState("");
+  const [novoUsuario, setNovoUsuario] = useState({ nome: "", email: "", turma: "9º A", tipo: "aluno" as "aluno" | "professor" });
   
   // Base de dados de usuários
   const [usuarios, setUsuarios] = useState<UserProfile[]>([
@@ -143,6 +144,12 @@ export default function AdminDashboard() {
                    className="p-4 bg-slate-900 border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition-all flex items-center gap-3 font-bold text-xs"
                 >
                     <Download className="w-4 h-4" /> Exportar Grade
+                </button>
+                <button 
+                   onClick={() => setIsModalOpen(true)}
+                   className="p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-3 font-bold text-xs"
+                >
+                    <Plus className="w-4 h-4" /> Adicionar Manual
                 </button>
                 <button 
                    onClick={handleImportClick}

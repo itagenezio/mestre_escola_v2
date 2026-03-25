@@ -23,21 +23,23 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   // Rotas do Administrador
   { icon: LayoutDashboard, label: "Painel Admin", href: "/dashboard/admin", roles: ['admin'] },
+  { icon: Users, label: "Gerenciar Usuários", href: "/dashboard/admin", roles: ['admin'] },
   { icon: Monitor, label: "Monitor Telão", href: "/dashboard/monitor", roles: ['admin'] },
   { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['admin', 'teacher'] },
   
-  // Rotas Compartilhadas e Aluno/Professor
-  { icon: GraduationCap, label: "Gestão Sala", href: "/dashboard/teacher", roles: ['teacher', 'admin'] },
-  { icon: Home, label: "Painel Aluno", href: "/dashboard/student", roles: ['student', 'admin'] },
+  // Rotas do Professor
+  { icon: GraduationCap, label: "Gestão Sala", href: "/dashboard/teacher", roles: ['teacher'] },
+  
+  // Rotas do Aluno
+  { icon: Home, label: "Painel Aluno", href: "/dashboard/student", roles: ['student'] },
   { icon: MessageSquare, label: "Mural de Recados", href: "/dashboard/mural", roles: ['student', 'teacher', 'admin'] },
-  { icon: Calendar, label: "Meu Horário", href: "/dashboard/schedule", roles: ['student', 'teacher', 'admin'] },
-  { icon: FileText, label: "Atividades", href: "/dashboard/tasks", roles: ['student', 'teacher', 'admin'] },
+  { icon: FileText, label: "Atividades", href: "/dashboard/tasks", roles: ['student', 'teacher'] },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { userRole } = useSchoolStore();
+  const { userRole, userName } = useSchoolStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -97,11 +99,11 @@ export default function Sidebar() {
             isCollapsed ? "justify-center" : ""
         )}>
             <div className="w-10 h-10 bg-slate-800 rounded-2xl flex items-center justify-center font-black text-indigo-500">
-               {userRole.charAt(0).toUpperCase()}
-            </div>
+                {userName ? userName.charAt(0).toUpperCase() : userRole.charAt(0).toUpperCase()}
+             </div>
             {!isCollapsed && (
                 <div className="flex-1 overflow-hidden">
-                    <p className="font-black text-xs uppercase tracking-widest truncate">{userRole}</p>
+                    <p className="font-black text-xs uppercase tracking-widest truncate">{userName || userRole}</p>
                     <p className="text-[10px] text-slate-500 font-bold">Online</p>
                 </div>
             )}
