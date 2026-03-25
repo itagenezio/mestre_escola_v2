@@ -4,7 +4,7 @@ import {
   Home, Users, Calendar, 
   Settings, LogOut, LayoutDashboard, 
   Monitor, FileText, MessageSquare, 
-  LucideIcon, GraduationCap, ShieldUser
+  LucideIcon, GraduationCap, ShieldUser, Menu, X
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -41,23 +41,48 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { userRole, userName } = useSchoolStore();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const filteredItems = NAV_ITEMS.filter(item => item.roles.includes(userRole));
 
-  if (!mounted) return <div className="w-24 bg-slate-950 border-r border-white/5" />;
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
+  };
+
+  if (!mounted) return <div className="w-16 bg-slate-950 border-r border-white/5" />;
 
   return (
+    <>
+      <button 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="md:hidden fixed bottom-4 right-4 z-[60] bg-indigo-600 p-4 rounded-full shadow-lg"
+      >
+        {isCollapsed ? <Menu className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
+      </button>
 
-    <div className={cn(
-        "bg-slate-950 border-r border-white/5 flex flex-col transition-all duration-500 relative z-50",
-        isCollapsed ? "w-24" : "w-72"
-    )}>
+      {!isCollapsed && isMobile && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsCollapsed(true)}
+        />
+      )}
+
+      <div className={cn(
+        "bg-slate-950 border-r border-white/5 flex flex-col transition-all duration-500 fixed md:relative z-50 h-screen",
+        isCollapsed ? "w-16 -translate-x-full md:translate-x-0 md:w-16" : "w-72"
+      )}>
       <div className="p-8 flex items-center gap-4">
         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
           <GraduationCap className="text-white w-6 h-6" />
@@ -74,6 +99,7 @@ export default function Sidebar() {
             <Link 
               key={item.href} 
               href={item.href}
+              onClick={handleLinkClick}
               className={cn(
                 "flex items-center gap-4 p-4 rounded-2xl transition-all group relative",
                 isActive 
@@ -119,5 +145,6 @@ export default function Sidebar() {
         </div>
       </div>
     </div>
+    </>
   );
 }
