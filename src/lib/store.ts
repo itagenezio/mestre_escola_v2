@@ -2,55 +2,111 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from './supabase';
 
-// Sistema avançado de rastro e atividades
 interface SchoolStore {
+  userRole: 'admin' | 'teacher' | 'student';
+  userClass: string;
   atividades: Record<string, string>; 
   recados: Record<string, string[]>;  
+  vistos: Record<string, string[]>; 
+  concluidos: Record<string, string[]>; 
   
-  // Rastreamento (ID do Aluno ou Nome)
-  vistos: Record<string, string[]>; // { "recado_id": ["João", "Maria"] }
-  concluidos: Record<string, string[]>; // { "atividade_turma": ["João"] }
-  
-  setAtividade: (turma: string, texto: string) => void;
-  addRecado: (turma: string, texto: string) => void;
-  marcarLido: (idRecado: string, aluno: string) => void;
-  marcarConcluido: (turma: string, aluno: string) => void;
-  limparTudo: () => void;
+  setUserRole: (role: 'admin' | 'teacher' | 'student') => void;
+  setUserClass: (turma: string) => void;
+  fetchFromSupabase: () => Promise<void>;
+  setAtividade: (turma: string, texto: string) => Promise<void>;
+  addRecado: (turma: string, texto: string) => Promise<void>;
+  marcarLido: (idRecado: string, aluno: string) => Promise<void>;
+  marcarConcluido: (turma: string, aluno: string) => Promise<void>;
+  limparTudo: () => Promise<void>;
 }
 
 export const useSchoolStore = create<SchoolStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
+      userRole: 'admin', // Default role
+      userClass: '9º B',
       atividades: {},
       recados: {},
       vistos: {},
       concluidos: {},
 
-      setAtividade: (turma, texto) => set((state) => ({
-        atividades: { ...state.atividades, [turma]: texto },
-        concluidos: { ...state.concluidos, [turma]: [] } // Limpa conclusões se a tarefa mudar
-      })),
+      setUserRole: (role) => set({ userRole: role }),
+      setUserClass: (turma) => set({ userClass: turma }),
 
-      addRecado: (turma, texto) => set((state) => ({
-        recados: { ...state.recados, [turma]: [texto, ...(state.recados[turma] || [])].slice(0, 5) }
-      })),
+      fetchFromSupabase: async () => {
+        const { data: posts } = await supabase.from('posts').select('*');
+        const { data: actions } = await supabase.from('tracked_actions').select('*');
 
-      marcarLido: (idRecado, aluno) => set((state) => ({
-        vistos: { 
-          ...state.vistos, 
-          [idRecado]: Array.from(new Set([...(state.vistos[idRecado] || []), aluno])) 
-        }
-      })),
+        const atividades: Record<string, string> = {};
+        const recados: Record<string, string[]> = {};
+        const vistos: Record<string, string[]> = {};
+        const concluidos: Record<string, string[]> = {};
 
-      marcarConcluido: (turma, aluno) => set((state) => ({
-        concluidos: { 
-          ...state.concluidos, 
-          [turma]: Array.from(new Set([...(state.concluidos[turma] || []), aluno])) 
-        }
-      })),
+        posts?.forEach(p => {
+          if (p.type === 'atividade') atividades[p.turma] = p.content;
+          if (p.type === 'recado') {
+            if (!recados[p.turma]) recados[p.turma] = [];
+            recados[p.turma].push(p.content);
+          }
+        });
 
-      limparTudo: () => set({ atividades: {}, recados: {}, vistos: {}, concluidos: {} })
+        actions?.forEach(a => {
+          const key = a.post_id || 'global';
+          if (a.action_type === 'visto') {
+            if (!vistos[key]) vistos[key] = [];
+            vistos[key].push(a.student_name);
+          }
+          if (a.action_type === 'concluido') {
+            if (!concluidos[key]) concluidos[key] = [];
+            concluidos[key].push(a.student_name);
+          }
+        });
+
+        set({ atividades, recados, vistos, concluidos });
+      },
+
+      setAtividade: async (turma, texto) => {
+        set((state) => ({
+          atividades: { ...state.atividades, [turma]: texto },
+          concluidos: { ...state.concluidos, [turma]: [] }
+        }));
+        await supabase.from('posts').upsert({ turma, type: 'atividade', content: texto });
+      },
+
+      addRecado: async (turma, texto) => {
+        set((state) => ({
+          recados: { ...state.recados, [turma]: [texto, ...(state.recados[turma] || [])].slice(0, 5) }
+        }));
+        await supabase.from('posts').insert({ turma, type: 'recado', content: texto });
+      },
+
+      marcarLido: async (idRecado, aluno) => {
+        set((state) => ({
+          vistos: { 
+            ...state.vistos, 
+            [idRecado]: Array.from(new Set([...(state.vistos[idRecado] || []), aluno])) 
+          }
+        }));
+        // Rastreio persistente no banco (idRecado pode ser ID do post se disponível)
+        await supabase.from('tracked_actions').insert({ student_name: aluno, action_type: 'visto' });
+      },
+
+      marcarConcluido: async (turma, aluno) => {
+        set((state) => ({
+          concluidos: { 
+            ...state.concluidos, 
+            [turma]: Array.from(new Set([...(state.concluidos[turma] || []), aluno])) 
+          }
+        }));
+        await supabase.from('tracked_actions').insert({ student_name: aluno, action_type: 'concluido' });
+      },
+
+      limparTudo: async () => {
+        set({ atividades: {}, recados: {}, vistos: {}, concluidos: {} });
+        await supabase.from('posts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      }
     }),
     { name: 'mestre-escola-v3-advanced-store' }
   )

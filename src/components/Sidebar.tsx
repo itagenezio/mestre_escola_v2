@@ -11,6 +11,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useSchoolStore } from "@/lib/store";
 
 interface NavItem {
   icon: LucideIcon;
@@ -21,35 +22,35 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   // Rotas do Administrador
-  { icon: LayoutDashboard, label: "Admin Painel", href: "/dashboard/admin", roles: ['admin'] },
+  { icon: LayoutDashboard, label: "Painel Admin", href: "/dashboard/admin", roles: ['admin'] },
   { icon: Monitor, label: "Monitor Telão", href: "/dashboard/monitor", roles: ['admin'] },
-  { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['admin'] },
+  { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['admin', 'teacher'] },
   
-  // Rotas do Professor
+  // Rotas Compartilhadas e Aluno/Professor
   { icon: GraduationCap, label: "Gestão Sala", href: "/dashboard/teacher", roles: ['teacher', 'admin'] },
-  
-  // Rotas do Aluno
-  { icon: Home, label: "Meu Painel", href: "/dashboard/student", roles: ['student', 'admin'] },
-  { icon: Calendar, label: "Meu Horário", href: "/dashboard/schedule", roles: ['student', 'admin'] },
-  { icon: FileText, label: "Atividades", href: "/dashboard/tasks", roles: ['student', 'admin'] },
+  { icon: Home, label: "Painel Aluno", href: "/dashboard/student", roles: ['student', 'admin'] },
+  { icon: MessageSquare, label: "Mural de Recados", href: "/dashboard/mural", roles: ['student', 'teacher', 'admin'] },
+  { icon: Calendar, label: "Meu Horário", href: "/dashboard/schedule", roles: ['student', 'teacher', 'admin'] },
+  { icon: FileText, label: "Atividades", href: "/dashboard/tasks", roles: ['student', 'teacher', 'admin'] },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [role, setRole] = useState<'admin' | 'teacher' | 'student'>('admin'); // Mock para desenvolvimento
+  const { userRole } = useSchoolStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Lógica para detectar o papel baseado na URL por enquanto
-    if (pathname.includes('/student')) setRole('student');
-    else if (pathname.includes('/teacher')) setRole('teacher');
-    else if (pathname.includes('/admin')) setRole('admin');
-  }, [pathname]);
+    setMounted(true);
+  }, []);
 
-  const filteredItems = NAV_ITEMS.filter(item => item.roles.includes(role));
+  const filteredItems = NAV_ITEMS.filter(item => item.roles.includes(userRole));
+
+  if (!mounted) return <div className="w-24 bg-slate-950 border-r border-white/5" />;
 
   return (
+
     <div className={cn(
         "bg-slate-950 border-r border-white/5 flex flex-col transition-all duration-500 relative z-50",
         isCollapsed ? "w-24" : "w-72"
@@ -96,11 +97,11 @@ export default function Sidebar() {
             isCollapsed ? "justify-center" : ""
         )}>
             <div className="w-10 h-10 bg-slate-800 rounded-2xl flex items-center justify-center font-black text-indigo-500">
-               {role.charAt(0).toUpperCase()}
+               {userRole.charAt(0).toUpperCase()}
             </div>
             {!isCollapsed && (
                 <div className="flex-1 overflow-hidden">
-                    <p className="font-black text-xs uppercase tracking-widest truncate">{role}</p>
+                    <p className="font-black text-xs uppercase tracking-widest truncate">{userRole}</p>
                     <p className="text-[10px] text-slate-500 font-bold">Online</p>
                 </div>
             )}

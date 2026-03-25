@@ -11,12 +11,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { playNotification } from "@/lib/notify";
 import { cn } from "@/lib/utils";
+import { useSchoolStore } from "@/lib/store";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    useSchoolStore.getState().fetchFromSupabase();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,12 +39,16 @@ export default function LoginPage() {
 
     if (upperCode.startsWith("ALUN-")) {
        playNotification("success");
+       useSchoolStore.getState().setUserRole('student');
+       useSchoolStore.getState().setUserClass('9º B');
        router.push("/dashboard/student");
     } else if (upperCode.startsWith("PROF-")) {
        playNotification("success");
+       useSchoolStore.getState().setUserRole('teacher');
        router.push("/dashboard/teacher");
     } else if (upperCode === "ADMIN-MASTER" || upperCode.startsWith("ADMN-")) {
        playNotification("success");
+       useSchoolStore.getState().setUserRole('admin');
        router.push("/dashboard/admin");
     } else {
        setError("Código de acesso não reconhecido. Tente novamente.");

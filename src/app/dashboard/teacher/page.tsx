@@ -58,9 +58,9 @@ export default function TeacherDashboard() {
   };
 
   const handlePostarRecado = () => {
-    if (!novoRecado) return;
-    addRecado(selectedTurma, novoRecado);
-    setNovoRecado("");
+    if (!novaAtiv) return showToast("⚠️ Escreva o recado primeiro.", "info");
+    addRecado(selectedTurma, novaAtiv);
+    setNovaAtiv("");
     playNotification("notification");
     showToast(`🔔 Recado postado no mural de ${selectedTurma}.`);
   };
@@ -171,7 +171,7 @@ export default function TeacherDashboard() {
   );
 }
 
-function StatusCard({ label, value, color, sub }: { label: string, value: number, color: string, subText?: string }) {
+function StatusCard({ label, value, color, sub }: { label: string, value: number, color: string, sub: string }) {
     return (
         <GlassCard className="p-8 border-white/5 space-y-2">
              <p className="text-[10px] font-black uppercase text-slate-600 tracking-widest leading-none">{label}</p>
