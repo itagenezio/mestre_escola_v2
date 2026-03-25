@@ -37,7 +37,7 @@ export default function TeacherDashboard() {
     const today = daysMap[new Date().getDay()];
     const diaEfetivo = SCHEDULE_DATA[today] ? today : "Segunda";
 
-    const minhaAgenda: { aula: string; turma: string; horario: string }[] = [];
+    const minhaAgenda: { aula: string; turma: string; horario: string; materia: string }[] = [];
     
     // Extrai apenas o nome do professor (remove acentos e espaços extras)
     const profSearch = profName.toUpperCase().replace(/\s+/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
