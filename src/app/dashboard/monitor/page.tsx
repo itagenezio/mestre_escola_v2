@@ -141,61 +141,116 @@ export default function MonitorTV() {
                 </div>
               </div>
 
-              {/* Todas as Aulas do Dia */}
-              <div className="space-y-4">
-                {AULAS_VALIDAS.map((aula) => {
-                  const isCurrent = currentAula?.id === aula.id;
-                  return (
-                    <div key={aula.id} className={cn(
-                      "rounded-2xl border overflow-hidden",
-                      isCurrent ? "bg-indigo-600/20 border-indigo-500/50" : "bg-slate-900/50 border-slate-800"
-                    )}>
-                      {/* Header da Aula */}
-                      <div className={cn(
-                        "px-6 py-3 flex items-center justify-between",
-                        isCurrent ? "bg-indigo-600/30" : "bg-slate-800/50"
+              {/* MANHÃ - Aulas 1-5 */}
+              <div className="mb-8">
+                <h3 className="text-2xl font-black text-amber-400 mb-4 px-2">☀️ MANHÃ</h3>
+                <div className="space-y-3">
+                  {AULAS_VALIDAS.slice(0, 5).map((aula) => {
+                    const isCurrent = currentAula?.id === aula.id;
+                    return (
+                      <div key={aula.id} className={cn(
+                        "rounded-xl border overflow-hidden",
+                        isCurrent ? "bg-indigo-600/20 border-indigo-500/50" : "bg-slate-900/50 border-slate-800"
                       )}>
-                        <div className="flex items-center gap-4">
-                          <span className={cn(
-                            "px-3 py-1 rounded-lg font-black text-sm",
-                            isCurrent ? "bg-indigo-500 text-white" : "bg-slate-700 text-slate-300"
-                          )}>
-                            Aula {aula.id}
-                          </span>
-                          <span className="font-bold text-lg text-white">
-                            {aula.inicio} às {aula.fim}
-                          </span>
-                        </div>
-                        {isCurrent && (
-                          <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase animate-pulse">
-                            AGORA
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Grade de Professores */}
-                      <div className="grid grid-cols-[80px_repeat(9,1fr)] gap-1 p-3">
-                        {TURMAS_COLS.map((turma, idx) => {
-                          const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
-                          const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                          const parts = item.split(' - ');
-                          const prof = parts[0] || item;
-                          const mat = parts.slice(1).join(' - ') || "";
-                          
-                          return (
-                            <div key={idx} className={cn(
-                              "p-2 rounded-xl border flex flex-col justify-center",
-                              isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
+                        <div className={cn(
+                          "px-4 py-2 flex items-center justify-between",
+                          isCurrent ? "bg-indigo-600/30" : "bg-slate-800/50"
+                        )}>
+                          <div className="flex items-center gap-3">
+                            <span className={cn(
+                              "px-2 py-1 rounded font-black text-xs",
+                              isCurrent ? "bg-indigo-500 text-white" : "bg-slate-700 text-slate-300"
                             )}>
-                              <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
-                              <p className="text-[8px] font-bold text-slate-500 uppercase truncate">{mat}</p>
-                            </div>
-                          );
-                        })}
+                              {aula.id}ª
+                            </span>
+                            <span className="font-bold text-white">
+                              {aula.inicio} - {aula.fim}
+                            </span>
+                          </div>
+                          {isCurrent && (
+                            <span className="bg-emerald-500 text-white px-2 py-1 rounded-full text-[10px] font-black uppercase animate-pulse">
+                              AGORA
+                            </span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-[60px_repeat(9,1fr)] gap-1 p-2">
+                          {TURMAS_COLS.map((turma, idx) => {
+                            const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
+                            const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                            const parts = item.split(' - ');
+                            const prof = parts[0] || item;
+                            const mat = parts.slice(1).join(' - ') || "";
+                            
+                            return (
+                              <div key={idx} className={cn(
+                                "p-1.5 rounded-lg border flex flex-col justify-center",
+                                isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
+                              )}>
+                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* TARDE - Aulas 6-9 */}
+              <div>
+                <h3 className="text-2xl font-black text-purple-400 mb-4 px-2">🌙 TARDE</h3>
+                <div className="space-y-3">
+                  {AULAS_VALIDAS.slice(5).map((aula) => {
+                    const isCurrent = currentAula?.id === aula.id;
+                    return (
+                      <div key={aula.id} className={cn(
+                        "rounded-xl border overflow-hidden",
+                        isCurrent ? "bg-indigo-600/20 border-indigo-500/50" : "bg-slate-900/50 border-slate-800"
+                      )}>
+                        <div className={cn(
+                          "px-4 py-2 flex items-center justify-between",
+                          isCurrent ? "bg-indigo-600/30" : "bg-slate-800/50"
+                        )}>
+                          <div className="flex items-center gap-3">
+                            <span className={cn(
+                              "px-2 py-1 rounded font-black text-xs",
+                              isCurrent ? "bg-indigo-500 text-white" : "bg-slate-700 text-slate-300"
+                            )}>
+                              {aula.id}ª
+                            </span>
+                            <span className="font-bold text-white">
+                              {aula.inicio} - {aula.fim}
+                            </span>
+                          </div>
+                          {isCurrent && (
+                            <span className="bg-emerald-500 text-white px-2 py-1 rounded-full text-[10px] font-black uppercase animate-pulse">
+                              AGORA
+                            </span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-[60px_repeat(9,1fr)] gap-1 p-2">
+                          {TURMAS_COLS.map((turma, idx) => {
+                            const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
+                            const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                            const parts = item.split(' - ');
+                            const prof = parts[0] || item;
+                            const mat = parts.slice(1).join(' - ') || "";
+                            
+                            return (
+                              <div key={idx} className={cn(
+                                "p-1.5 rounded-lg border flex flex-col justify-center",
+                                isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
+                              )}>
+                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </motion.div>
           ) : (
