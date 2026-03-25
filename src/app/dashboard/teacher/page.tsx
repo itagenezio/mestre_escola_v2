@@ -37,15 +37,24 @@ export default function TeacherDashboard() {
     const today = daysMap[new Date().getDay()];
     const diaEfetivo = SCHEDULE_DATA[today] ? today : "Segunda";
 
-    const minhaAgenda = Object.entries(SCHEDULE_DATA[diaEfetivo]).map(([aulaNum, turmas]) => {
-        const profUpper = profName.toUpperCase();
-        const idx = turmas.findIndex(t => t.toUpperCase().includes(profUpper));
-        if (idx !== -1) {
-            const h = HORARIOS_AULAS.find(a => a.id.toString() === aulaNum);
-            return { aula: aulaNum, turma: TURMAS_COLS[idx], horario: h?.inicio || "" };
+    const minhaAgenda: { aula: string; turma: string; horario: string }[] = [];
+    
+    Object.entries(SCHEDULE_DATA[diaEfetivo]).forEach(([aulaNum, turmas]) => {
+      const profUpper = profName.toUpperCase();
+      turmas.forEach((aula, idx) => {
+        if (aula.toUpperCase().includes(profUpper)) {
+          const h = HORARIOS_AULAS.find(a => a.id.toString() === aulaNum);
+          minhaAgenda.push({ 
+            aula: aulaNum, 
+            turma: TURMAS_COLS[idx], 
+            horario: h?.inicio || "" 
+          });
         }
-        return null;
-    }).filter(x => x !== null) as { aula: string; turma: string; horario: string }[];
+      });
+    });
+
+    // Ordena por horário
+    minhaAgenda.sort((a, b) => a.horario.localeCompare(b.horario));
 
     setAgendaHoje(minhaAgenda);
   }, [profName]);
