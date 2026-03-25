@@ -22,7 +22,7 @@ export default function StudentDashboard() {
   const [diaSemana, setDiaSemana] = useState("Segunda");
   const [confirmou, setConfirmou] = useState(false);
 
-  // Dia da semana
+  // Dia da semana - inicializa corretamente
   useEffect(() => {
     const daysMap = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
     const dayNum = new Date().getDay();
@@ -35,11 +35,23 @@ export default function StudentDashboard() {
 
   // Carrega horário da turma
   useEffect(() => {
+    if (!diaSemana || !minhaTurma) return;
+    
     const idxTurma = TURMAS_COLS.indexOf(minhaTurma);
+    if (idxTurma === -1) return;
+    
     const aulasValidas = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
     
     const novoHorario = aulasValidas.map((aula) => {
-      const item = SCHEDULE_DATA[diaSemana]?.[aula.id.toString()]?.[idxTurma] || "Livre";
+      const dadosTurma = SCHEDULE_DATA[diaSemana];
+      if (!dadosTurma) {
+        return { aula: aula.id.toString(), horario: `${aula.inicio} - ${aula.fim}`, materia: "Livre" };
+      }
+      const aulaData = dadosTurma[aula.id.toString()];
+      if (!aulaData) {
+        return { aula: aula.id.toString(), horario: `${aula.inicio} - ${aula.fim}`, materia: "Livre" };
+      }
+      const item = aulaData[idxTurma] || "Livre";
       return {
         aula: aula.id.toString(),
         horario: `${aula.inicio} - ${aula.fim}`,
