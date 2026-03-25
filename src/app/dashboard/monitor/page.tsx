@@ -14,7 +14,7 @@ const AULAS_VALIDAS = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
 
 export default function MonitorTV() {
   const [now, setNow] = useState(new Date());
-  const [viewMode, setViewMode] = useState<"auto" | "preview" | "full">("full");
+  const [viewMode, setViewMode] = useState<"auto" | "preview" | "full">("auto");
   const [previewAula, setPreviewAula] = useState("1");
   const [currentDia, setCurrentDia] = useState("Segunda");
 
