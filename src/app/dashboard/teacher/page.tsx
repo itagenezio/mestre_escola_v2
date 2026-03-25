@@ -169,17 +169,33 @@ export default function TeacherDashboard() {
                      </select>
                   </div>
                   
-                  <div className="bg-slate-950 border border-slate-800 rounded-[2.5rem] p-8 space-y-6 shadow-2xl">
-                    <textarea 
-                            value={novaAtiv} onChange={(e) => setNovaAtiv(e.target.value)}
-                            placeholder="Atividade de hoje: Ex: Exercícios pág 12..."
-                            className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-5 text-slate-200 placeholder-slate-700 focus:border-indigo-500 focus:outline-none transition-all resize-none shadow-inner"
-                    />
-                    <div className="flex gap-4">
-                       <button onClick={handleLancarAtividade} className="flex-1 py-4 bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl hover:bg-indigo-500 transition-all active:scale-95">Lançar Atividade</button>
-                       <button onClick={handlePostarRecado} className="px-8 bg-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all"><MessageSquare className="w-5 h-5" /></button>
-                    </div>
-                  </div>
+                   <div className="bg-slate-950 border border-slate-800 rounded-[2.5rem] p-8 space-y-6 shadow-2xl">
+                     <textarea 
+                             value={novaAtiv} onChange={(e) => setNovaAtiv(e.target.value)}
+                             placeholder="Atividade de hoje: Ex: Exercícios pág 12..."
+                             className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-5 text-slate-200 placeholder-slate-700 focus:border-indigo-500 focus:outline-none transition-all resize-none shadow-inner"
+                     />
+                     <div className="flex gap-4">
+                        <button onClick={handleLancarAtividade} className="flex-1 py-4 bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl hover:bg-indigo-500 transition-all active:scale-95">Lançar Atividade</button>
+                     </div>
+                   </div>
+
+                   <div className="bg-slate-950 border border-amber-500/30 rounded-[2.5rem] p-8 space-y-6 shadow-2xl">
+                     <textarea 
+                             value={novoRecado} onChange={(e) => setNovoRecado(e.target.value)}
+                             placeholder="Escreva um recado para a turma..."
+                             className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-5 text-slate-200 placeholder-slate-700 focus:border-amber-500 focus:outline-none transition-all resize-none shadow-inner"
+                     />
+                     <div className="flex gap-4">
+                        <button onClick={() => {
+                          if (!novoRecado) return showToast("⚠️ Escreva o recado primeiro.", "info");
+                          addRecado(selectedTurma, novoRecado);
+                          setNovoRecado("");
+                          playNotification("notification");
+                          showToast(`🔔 Recado postado no mural de ${selectedTurma}.`);
+                        }} className="flex-1 py-4 bg-amber-600 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl hover:bg-amber-500 transition-all active:scale-95">Postar Recado</button>
+                     </div>
+                   </div>
               </section>
 
               {/* Status da Turma */}
