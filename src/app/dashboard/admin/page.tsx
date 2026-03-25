@@ -140,28 +140,6 @@ function AdminContent() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-indigo-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">
           <Shield className="w-4 h-4" /> Admin - Mestre Escola
         </motion.div>
-        
-        {/* Abas */}
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => setActiveTab("inicio")}
-            className={cn(
-              "px-4 py-2 rounded-xl font-bold text-sm",
-              activeTab === "inicio" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-400"
-            )}
-          >
-            Painel Inicial
-          </button>
-          <button
-            onClick={() => setActiveTab("usuarios")}
-            className={cn(
-              "px-4 py-2 rounded-xl font-bold text-sm",
-              activeTab === "usuarios" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-400"
-            )}
-          >
-            Gerenciar Usuários
-          </button>
-        </div>
       </header>
 
       {/* PAINEL INICIAL */}

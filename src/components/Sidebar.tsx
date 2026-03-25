@@ -22,8 +22,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   // Rotas do Administrador
-  { icon: LayoutDashboard, label: "Painel Inicial", href: "/dashboard/admin?tab=inicio", roles: ['admin'] },
-  { icon: Users, label: "Gerenciar Usuários", href: "/dashboard/admin?tab=usuarios", roles: ['admin'] },
+  { icon: LayoutDashboard, label: "Painel Inicial", href: "/dashboard/admin", roles: ['admin'] },
+  { icon: Users, label: "Gerenciar Usuários", href: "/dashboard/admin/users", roles: ['admin'] },
   { icon: Monitor, label: "Monitor Telão", href: "/dashboard/monitor", roles: ['admin'] },
   { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['admin'] },
   
