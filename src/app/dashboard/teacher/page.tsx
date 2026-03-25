@@ -115,22 +115,29 @@ export default function TeacherDashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
           {/* Minha Agenda do Dia */}
           <section className="xl:col-span-5 space-y-6">
-              <h2 className="text-2xl font-black mb-6 flex items-center gap-3">🗓️ Minha Agenda Hoje</h2>
+              <h2 className="text-2xl font-black mb-6 flex items-center gap-3">🗓️ Minha Agenda Hoje <span className="text-xs text-slate-500 font-normal">(clique para selecionar turma)</span></h2>
               <div className="space-y-4">
                   {agendaHoje.map((a, i) => (
-                      <GlassCard key={i} className="p-6 border-white/5 hover:border-indigo-500/30 transition-all flex items-center justify-between group">
+                      <GlassCard 
+                        key={i} 
+                        onClick={() => setSelectedTurma(a.turma)}
+                        className={cn(
+                          "p-6 border-white/5 hover:border-indigo-500/30 transition-all flex items-center justify-between group cursor-pointer",
+                          selectedTurma === a.turma && "border-indigo-500 bg-indigo-500/10"
+                        )}
+                      >
                           <div className="flex items-center gap-5">
-                             <div className="w-14 h-14 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center font-black">
-                                <span className="text-[10px] text-slate-600">Aula</span>
-                                <span className="text-xl text-indigo-400">{a.aula}</span>
-                             </div>
-                              <div>
-                                 <h3 className="text-xl font-black text-white">{a.turma}</h3>
-                                 <p className="text-xs font-black text-indigo-400 uppercase tracking-widest">{a.horario}</p>
-                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.materia}</p>
+                              <div className="w-14 h-14 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center font-black">
+                                 <span className="text-[10px] text-slate-600">Aula</span>
+                                 <span className="text-xl text-indigo-400">{a.aula}</span>
                               </div>
+                               <div>
+                                  <h3 className="text-xl font-black text-white">{a.turma}</h3>
+                                  <p className="text-xs font-black text-indigo-400 uppercase tracking-widest">{a.horario}</p>
+                                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.materia}</p>
+                               </div>
                           </div>
-                          <MapPin className="w-6 h-6 text-slate-800 group-hover:text-indigo-600 transition-colors" />
+                          <MapPin className={cn("w-6 h-6 transition-colors", selectedTurma === a.turma ? "text-indigo-500" : "text-slate-800 group-hover:text-indigo-600")} />
                       </GlassCard>
                   ))}
                   {agendaHoje.length === 0 && <p className="text-slate-700 italic">Nenhuma aula encontrada para hoje.</p>}
