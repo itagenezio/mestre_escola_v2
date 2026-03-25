@@ -177,9 +177,10 @@ export default function MonitorTV() {
                           {TURMAS_COLS.map((turma, idx) => {
                             const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
                             const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                            const parts = item.split(' - ');
+                            // Normaliza: troca travessão longo por hífen
+                            const itemNorm = item.replace(/[–—]/g, '-').replace(/\s*-\s*/g, ' - ').trim();
+                            const parts = itemNorm.split(' - ');
                             const prof = parts[0] || item;
-                            const mat = parts.slice(1).join(' - ') || "";
                             
                             return (
                               <div key={idx} className={cn(
@@ -233,9 +234,10 @@ export default function MonitorTV() {
                           {TURMAS_COLS.map((turma, idx) => {
                             const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
                             const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                            const parts = item.split(' - ');
+                            // Normaliza: troca travessão longo por hífen
+                            const itemNorm = item.replace(/[–—]/g, '-').replace(/\s*-\s*/g, ' - ').trim();
+                            const parts = itemNorm.split(' - ');
                             const prof = parts[0] || item;
-                            const mat = parts.slice(1).join(' - ') || "";
                             
                             return (
                               <div key={idx} className={cn(
