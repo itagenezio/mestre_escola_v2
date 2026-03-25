@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { HORARIOS_AULAS, SCHEDULE_DATA, TURMAS_COLS } from "@/lib/schedule";
 
+const AULAS_VALIDAS = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
+
 export default function MonitorTV() {
   const [now, setNow] = useState(new Date());
   const [viewMode, setViewMode] = useState<"auto" | "preview" | "full">("full");
@@ -17,27 +19,26 @@ export default function MonitorTV() {
   const [currentDia, setCurrentDia] = useState("Segunda");
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
     const daysMap = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
     const dayNum = now.getDay();
-    // Se for fim de semana, mostra Quarta por padrão
     if (dayNum === 0 || dayNum === 6) {
       setCurrentDia("Quarta");
     } else {
       setCurrentDia(daysMap[dayNum]);
     }
-    return () => clearInterval(timer);
   }, [now]);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   
-  // Aulas Válidas (limpa os intervalos para a grade)
-  const aulasValidas = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
-
   // Encontra a aula atual
   const getCurrentAula = () => {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    for (const aula of aulasValidas) {
+    for (const aula of AULAS_VALIDAS) {
       const inicioMin = parseInt(aula.inicio.split(':')[0]) * 60 + parseInt(aula.inicio.split(':')[1]);
       const fimMin = parseInt(aula.fim.split(':')[0]) * 60 + parseInt(aula.fim.split(':')[1]);
       if (currentMinutes >= inicioMin && currentMinutes < fimMin) {
@@ -89,7 +90,7 @@ export default function MonitorTV() {
                </div>
                
                <div className="flex-1 overflow-y-auto space-y-1 p-2">
-                    {aulasValidas.map((aula, i) => (
+                    {AULAS_VALIDAS.map((aula, i) => (
                         <div key={aula.id} className="grid grid-cols-[80px_repeat(9,1fr)] gap-1 group">
                              <div className="bg-slate-900/30 p-3 rounded-xl flex flex-col justify-center items-center border border-transparent group-hover:border-indigo-500/30 transition-colors">
                                 <span className="text-indigo-400 font-bold text-xs">{aula.inicio}</span>
@@ -142,7 +143,7 @@ export default function MonitorTV() {
 
               {/* Todas as Aulas do Dia */}
               <div className="space-y-4">
-                {aulasValidas.map((aula) => {
+                {AULAS_VALIDAS.map((aula) => {
                   const isCurrent = currentAula?.id === aula.id;
                   return (
                     <div key={aula.id} className={cn(
