@@ -122,53 +122,79 @@ export default function MonitorTV() {
                     ))}
                </div>
             </motion.div>
-          ) : viewMode === "auto" && currentAula ? (
+          ) : viewMode === "auto" ? (
             <motion.div 
               key="auto-view"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col"
+              className="flex-1 flex flex-col overflow-y-auto"
             >
-              {/* Aula Atual em Destaque */}
-              <div className="mb-8">
-                <div className="bg-indigo-600/20 border border-indigo-500/30 rounded-[2rem] p-8 flex items-center justify-between">
-                  <div>
-                    <p className="text-indigo-400 font-black uppercase text-xs tracking-widest mb-2">AULA ATUAL</p>
-                    <h2 className="text-6xl font-black text-white">{currentAula.inicio} às {currentAula.fim}</h2>
-                    <p className="text-2xl font-bold text-indigo-400 mt-2">Aula {currentAula.id}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-8xl font-black text-indigo-500">{timeStr}</p>
-                  </div>
+              {/* Header com Hora Atual */}
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[2rem] p-6 mb-6 flex items-center justify-between">
+                <div>
+                  <p className="text-indigo-200 font-black uppercase text-xs tracking-widest mb-1">{currentDia}</p>
+                  <h2 className="text-4xl font-black text-white">Dia de Aula</h2>
+                </div>
+                <div className="text-right">
+                  <p className="text-6xl font-black text-white/90">{timeStr}</p>
                 </div>
               </div>
 
-              {/* Grade Compacta da Aula Atual */}
-              <div className="grid grid-cols-[100px_repeat(9,1fr)] bg-slate-900/80 p-4 border-b border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                <div>Hora</div>
-                {TURMAS_COLS.map(t => <div key={t} className="text-center">{t}</div>)}
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <div className="grid grid-cols-[100px_repeat(9,1fr)] gap-1 p-2">
-                  <div className="bg-indigo-600/20 p-4 rounded-xl flex flex-col justify-center items-center border border-indigo-500/30">
-                    <span className="text-indigo-400 font-bold text-lg">{currentAula.inicio}</span>
-                    <span className="text-[10px] text-slate-500 font-black uppercase">Aula {currentAula.id}</span>
-                  </div>
-                  {TURMAS_COLS.map((_, idx) => {
-                    const item = SCHEDULE_DATA[currentDia]?.[currentAula.id.toString()]?.[idx] || "—";
-                    const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
-                    const parts = item.split(' - ');
-                    const prof = parts[0] || item;
-                    const mat = parts.slice(1).join(' - ') || "";
-                    
-                    return (
-                      <div key={idx} className={cn("p-3 rounded-xl border flex flex-col justify-center", isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10")}>
-                        <p className={cn("text-xs font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase truncate">{mat}</p>
+              {/* Todas as Aulas do Dia */}
+              <div className="space-y-4">
+                {aulasValidas.map((aula) => {
+                  const isCurrent = currentAula?.id === aula.id;
+                  return (
+                    <div key={aula.id} className={cn(
+                      "rounded-2xl border overflow-hidden",
+                      isCurrent ? "bg-indigo-600/20 border-indigo-500/50" : "bg-slate-900/50 border-slate-800"
+                    )}>
+                      {/* Header da Aula */}
+                      <div className={cn(
+                        "px-6 py-3 flex items-center justify-between",
+                        isCurrent ? "bg-indigo-600/30" : "bg-slate-800/50"
+                      )}>
+                        <div className="flex items-center gap-4">
+                          <span className={cn(
+                            "px-3 py-1 rounded-lg font-black text-sm",
+                            isCurrent ? "bg-indigo-500 text-white" : "bg-slate-700 text-slate-300"
+                          )}>
+                            Aula {aula.id}
+                          </span>
+                          <span className="font-bold text-lg text-white">
+                            {aula.inicio} às {aula.fim}
+                          </span>
+                        </div>
+                        {isCurrent && (
+                          <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase animate-pulse">
+                            AGORA
+                          </span>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
+                      
+                      {/* Grade de Professores */}
+                      <div className="grid grid-cols-[80px_repeat(9,1fr)] gap-1 p-3">
+                        {TURMAS_COLS.map((turma, idx) => {
+                          const item = SCHEDULE_DATA[currentDia]?.[aula.id.toString()]?.[idx] || "—";
+                          const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                          const parts = item.split(' - ');
+                          const prof = parts[0] || item;
+                          const mat = parts.slice(1).join(' - ') || "";
+                          
+                          return (
+                            <div key={idx} className={cn(
+                              "p-2 rounded-xl border flex flex-col justify-center",
+                              isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
+                            )}>
+                              <p className={cn("text-[10px] font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                              <p className="text-[8px] font-bold text-slate-500 uppercase truncate">{mat}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           ) : (
@@ -182,7 +208,7 @@ export default function MonitorTV() {
       </main>
 
       <footer className="mt-4 flex items-center justify-between text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] px-4">
-          <div>Display v3.5 — Sala dos Professores</div>
+          <div>Display v4.0 — Sala dos Professores</div>
           <div className="flex gap-10">
               <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Sistema Sincronizado</span>
               <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" /> PDF Processado 100%</span>
