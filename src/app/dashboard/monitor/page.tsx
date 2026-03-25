@@ -187,7 +187,7 @@ export default function MonitorTV() {
                                 "p-1.5 rounded-lg border flex flex-col justify-center",
                                 isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
                               )}>
-                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
                               </div>
                             );
                           })}
@@ -244,7 +244,7 @@ export default function MonitorTV() {
                                 "p-1.5 rounded-lg border flex flex-col justify-center",
                                 isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10"
                               )}>
-                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                                <p className={cn("text-[8px] font-black leading-tight truncate", isFree ? "text-amber-500/60" : "text-white")}>{item}</p>
                               </div>
                             );
                           })}
