@@ -5,13 +5,19 @@ import { MessageSquare, Bell, User, Clock, CheckCircle2 } from "lucide-react";
 import GlassCard from "@/components/GlassCard";
 import BackButton from "@/components/BackButton";
 import { useSchoolStore } from "@/lib/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { playNotification } from "@/lib/notify";
 
 export default function MuralPage() {
-  const { recados, userClass } = useSchoolStore();
+  const recados = useSchoolStore((state) => state.recados);
+  const userClass = useSchoolStore((state) => state.userClass);
+  const fetchFromSupabase = useSchoolStore((state) => state.fetchFromSupabase);
   const [isLido, setIsLido] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    fetchFromSupabase();
+  }, [fetchFromSupabase]);
 
   const recadosTurma = recados[userClass] || [];
 
