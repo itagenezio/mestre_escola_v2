@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import GlassCard from "@/components/GlassCard";
 import BackButton from "@/components/BackButton";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { playNotification } from "@/lib/notify";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { exportToCSV } from "@/lib/schedule"; 
 import { cn } from "@/lib/utils";
 
@@ -27,12 +27,20 @@ interface UserProfile {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState("inicio");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [termoBusca, setTermoBusca] = useState("");
   const [novoUsuario, setNovoUsuario] = useState({ nome: "", email: "", turma: "9º A", tipo: "aluno" as "aluno" | "professor" });
+
+  // Ler tab da URL
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
   
   // Base de dados de usuários
   const [usuarios, setUsuarios] = useState<UserProfile[]>([
