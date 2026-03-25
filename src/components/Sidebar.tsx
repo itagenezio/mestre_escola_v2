@@ -50,7 +50,7 @@ export default function Sidebar() {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      setIsCollapsed(!mobile);
+      setIsCollapsed(mobile);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -87,11 +87,9 @@ export default function Sidebar() {
 
       <div className={cn(
         "bg-slate-950 border-r border-white/5 flex flex-col transition-all duration-500 fixed md:relative z-50 h-screen",
-        isCollapsed 
-          ? "w-16 -translate-x-full md:translate-x-0 md:w-16" 
-          : isMobile 
-            ? "w-72 translate-x-0" 
-            : "w-72"
+        isCollapsed && isMobile
+          ? "w-16 -translate-x-full" 
+          : "w-72 translate-x-0 md:translate-x-0"
       )}>
       <div className="p-8 flex items-center gap-4">
         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
