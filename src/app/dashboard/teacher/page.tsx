@@ -52,7 +52,7 @@ export default function TeacherDashboard() {
           minhaAgenda.push({ 
             aula: aulaNum, 
             turma: TURMAS_COLS[idx], 
-            horario: h?.inicio || "",
+            horario: `${h?.inicio || ""} às ${h?.fim || ""}`,
             materia: aula
           });
         }
@@ -126,7 +126,8 @@ export default function TeacherDashboard() {
                              </div>
                               <div>
                                  <h3 className="text-xl font-black text-white">{a.turma}</h3>
-                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.horario} - {a.materia}</p>
+                                 <p className="text-xs font-black text-indigo-400 uppercase tracking-widest">{a.horario}</p>
+                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.materia}</p>
                               </div>
                           </div>
                           <MapPin className="w-6 h-6 text-slate-800 group-hover:text-indigo-600 transition-colors" />
