@@ -22,7 +22,7 @@ export default function TeacherDashboard() {
   const [selectedTurma, setSelectedTurma] = useState("9º B");
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'info' } | null>(null);
   
-  const [agendaHoje, setAgendaHoje] = useState<{ aula: string; turma: string; horario: string }[]>([]);
+  const [agendaHoje, setAgendaHoje] = useState<{ aula: string; turma: string; horario: string; materia: string }[]>([]);
   const [novaAtiv, setNovaAtiv] = useState("");
   const [novoRecado, setNovoRecado] = useState("");
 
@@ -39,15 +39,21 @@ export default function TeacherDashboard() {
 
     const minhaAgenda: { aula: string; turma: string; horario: string }[] = [];
     
+    // Extrai apenas o nome do professor (remove acentos e espaços extras)
+    const profSearch = profName.toUpperCase().replace(/\s+/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    
     Object.entries(SCHEDULE_DATA[diaEfetivo]).forEach(([aulaNum, turmas]) => {
-      const profUpper = profName.toUpperCase();
       turmas.forEach((aula, idx) => {
-        if (aula.toUpperCase().includes(profUpper)) {
+        // Normaliza a string da aula para busca
+        const aulaNorm = aula.toUpperCase().replace(/\s+/g, ' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        // Procura pelo nome do professor seguido de separador (- ou espaço)
+        if (aulaNorm.includes(profSearch) || aulaNorm.includes(profSearch + ' -') || aulaNorm.includes(profSearch + '-')) {
           const h = HORARIOS_AULAS.find(a => a.id.toString() === aulaNum);
           minhaAgenda.push({ 
             aula: aulaNum, 
             turma: TURMAS_COLS[idx], 
-            horario: h?.inicio || "" 
+            horario: h?.inicio || "",
+            materia: aula
           });
         }
       });
@@ -118,10 +124,10 @@ export default function TeacherDashboard() {
                                 <span className="text-[10px] text-slate-600">Aula</span>
                                 <span className="text-xl text-indigo-400">{a.aula}</span>
                              </div>
-                             <div>
-                                <h3 className="text-xl font-black text-white">{a.turma}</h3>
-                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.horario}</p>
-                             </div>
+                              <div>
+                                 <h3 className="text-xl font-black text-white">{a.turma}</h3>
+                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{a.horario} - {a.materia}</p>
+                              </div>
                           </div>
                           <MapPin className="w-6 h-6 text-slate-800 group-hover:text-indigo-600 transition-colors" />
                       </GlassCard>
