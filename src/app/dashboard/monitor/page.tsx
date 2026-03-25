@@ -34,6 +34,21 @@ export default function MonitorTV() {
   // Aulas Válidas (limpa os intervalos para a grade)
   const aulasValidas = HORARIOS_AULAS.filter(h => typeof h.id === 'number');
 
+  // Encontra a aula atual
+  const getCurrentAula = () => {
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    for (const aula of aulasValidas) {
+      const inicioMin = parseInt(aula.inicio.split(':')[0]) * 60 + parseInt(aula.inicio.split(':')[1]);
+      const fimMin = parseInt(aula.fim.split(':')[0]) * 60 + parseInt(aula.fim.split(':')[1]);
+      if (currentMinutes >= inicioMin && currentMinutes < fimMin) {
+        return aula;
+      }
+    }
+    return null;
+  };
+  
+  const currentAula = getCurrentAula();
+
   return (
     <div className="min-h-screen bg-[#020617] text-white p-6 md:p-8 flex flex-col font-sans overflow-hidden">
       
@@ -107,9 +122,60 @@ export default function MonitorTV() {
                     ))}
                </div>
             </motion.div>
+          ) : viewMode === "auto" && currentAula ? (
+            <motion.div 
+              key="auto-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex-1 flex flex-col"
+            >
+              {/* Aula Atual em Destaque */}
+              <div className="mb-8">
+                <div className="bg-indigo-600/20 border border-indigo-500/30 rounded-[2rem] p-8 flex items-center justify-between">
+                  <div>
+                    <p className="text-indigo-400 font-black uppercase text-xs tracking-widest mb-2">AULA ATUAL</p>
+                    <h2 className="text-6xl font-black text-white">{currentAula.inicio} às {currentAula.fim}</h2>
+                    <p className="text-2xl font-bold text-indigo-400 mt-2">Aula {currentAula.id}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-8xl font-black text-indigo-500">{timeStr}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grade Compacta da Aula Atual */}
+              <div className="grid grid-cols-[100px_repeat(9,1fr)] bg-slate-900/80 p-4 border-b border-slate-800 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <div>Hora</div>
+                {TURMAS_COLS.map(t => <div key={t} className="text-center">{t}</div>)}
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <div className="grid grid-cols-[100px_repeat(9,1fr)] gap-1 p-2">
+                  <div className="bg-indigo-600/20 p-4 rounded-xl flex flex-col justify-center items-center border border-indigo-500/30">
+                    <span className="text-indigo-400 font-bold text-lg">{currentAula.inicio}</span>
+                    <span className="text-[10px] text-slate-500 font-black uppercase">Aula {currentAula.id}</span>
+                  </div>
+                  {TURMAS_COLS.map((_, idx) => {
+                    const item = SCHEDULE_DATA[currentDia]?.[currentAula.id.toString()]?.[idx] || "—";
+                    const isFree = item.includes("CARENCIA") || item.includes("REFORÇO");
+                    const parts = item.split(' - ');
+                    const prof = parts[0] || item;
+                    const mat = parts.slice(1).join(' - ') || "";
+                    
+                    return (
+                      <div key={idx} className={cn("p-3 rounded-xl border flex flex-col justify-center", isFree ? "bg-amber-500/10 border-amber-500/20" : "bg-white/5 border-white/10")}>
+                        <p className={cn("text-xs font-black leading-tight", isFree ? "text-amber-500/60" : "text-white")}>{prof}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase truncate">{mat}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
           ) : (
-            <div className="flex flex-col items-center justify-center p-20 text-slate-500 italic">
-                Modo simplificado em desenvolvimento... Clique em "Grade do Dia" acima.
+            <div className="flex flex-col items-center justify-center p-20 text-slate-500">
+              <Clock className="w-16 h-16 mb-4 opacity-30" />
+              <p className="text-lg font-bold">Nenhuma aula neste horário</p>
+              <p className="text-sm">Horário atual: {timeStr}</p>
             </div>
           )}
         </AnimatePresence>
