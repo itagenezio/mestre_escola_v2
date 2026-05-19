@@ -13,7 +13,7 @@ import { playNotification } from "@/lib/notify";
 import { cn } from "@/lib/utils";
 import { useSchoolStore } from "@/lib/store";
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { apiJson } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,19 +44,14 @@ export default function LoginPage() {
        useSchoolStore.getState().setUserClass('9º B');
        router.push("/dashboard/student");
     } else if (upperCode.startsWith("PROF-")) {
-       const { data, error } = await supabase
-         .from('professores')
-         .select('nome')
-         .eq('codigo_acesso', upperCode)
-         .single();
-
-       if (data && !error) {
+       try {
+         const prof = await apiJson<{ nome: string }>(`/api/mestre/professores/${upperCode}`);
          playNotification("success");
          const store = useSchoolStore.getState();
          store.setUserRole('teacher');
-         store.setUserName(data.nome); // Guarda o nome do professor no estado global
+         store.setUserName(prof.nome);
          router.push("/dashboard/teacher");
-       } else {
+       } catch {
          setError("Código de professor inválido ou não encontrado.");
          playNotification("notification");
          setIsValidating(false);

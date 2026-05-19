@@ -1,6 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
+/**
+ * Supabase removido — dados agora vêm da API do VPS (Node.js / PostgreSQL).
+ * Este arquivo é mantido apenas para evitar erros de importação em arquivos que
+ * ainda referenciam supabase. Não faz nenhuma chamada real.
+ */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase: any = null;

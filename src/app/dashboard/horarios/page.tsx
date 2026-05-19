@@ -22,7 +22,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { HORARIOS_AULAS, TURMAS_COLS } from "@/lib/schedule";
 import { useSchoolStore } from "@/lib/store";
-import { supabase } from "@/lib/supabase";
+import { apiJson, apiPost, apiPut, apiDelete } from "@/lib/api";
 
 // ═══════════════════════════════════════════════════════
 // TIPOS
@@ -140,12 +140,14 @@ export default function HorariosPage() {
 
   const buscarHorarios = async () => {
     setCarregando(true);
-    const { data } = await supabase
-      .from("horarios")
-      .select("*")
-      .order("aula_numero");
-    setHorarios(data ?? []);
-    setCarregando(false);
+    try {
+      const data = await apiJson<HorarioSlot[]>("/api/mestre/horarios");
+      setHorarios(data ?? []);
+    } catch {
+      setHorarios([]);
+    } finally {
+      setCarregando(false);
+    }
   };
 
   useEffect(() => { buscarHorarios(); }, []);
@@ -228,9 +230,9 @@ export default function HorariosPage() {
     setSalvando(true);
     try {
       if (editando) {
-        await supabase.from("horarios").update(form).eq("id", editando.id);
+        await apiPut(`/api/mestre/horarios/${editando.id}`, form);
       } else {
-        await supabase.from("horarios").insert(form);
+        await apiPost("/api/mestre/horarios", form);
       }
       await buscarHorarios();
       setModalAberto(false);
@@ -241,7 +243,7 @@ export default function HorariosPage() {
   };
 
   const excluir = async (id: string) => {
-    await supabase.from("horarios").delete().eq("id", id);
+    await apiDelete(`/api/mestre/horarios/${id}`);
     await buscarHorarios();
     setConfirmarExcluir(null);
     toast("Horário removido!");
