@@ -22,19 +22,21 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   // Rotas do Administrador
-  { icon: LayoutDashboard, label: "Painel Inicial", href: "/dashboard/admin", roles: ['admin'] },
-  { icon: Users, label: "Gerenciar Usuários", href: "/dashboard/admin/users", roles: ['admin'] },
-  { icon: Monitor, label: "Monitor Telão", href: "/dashboard/monitor", roles: ['admin'] },
-  { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['admin'] },
-  
+  { icon: LayoutDashboard, label: "Painel Inicial",     href: "/dashboard/admin",       roles: ['admin'] },
+  { icon: Users,           label: "Gerenciar Usuários", href: "/dashboard/admin/users", roles: ['admin'] },
+  { icon: Calendar,        label: "Grade de Horários",  href: "/dashboard/horarios",    roles: ['admin'] },
+  { icon: Monitor,         label: "Monitor Telão",      href: "/dashboard/monitor",     roles: ['admin'] },
+  { icon: Settings,        label: "Configurações",      href: "/dashboard/settings",    roles: ['admin'] },
+
   // Rotas do Professor
-  { icon: GraduationCap, label: "Gestão Sala", href: "/dashboard/teacher", roles: ['teacher'] },
-  { icon: Settings, label: "Configurações", href: "/dashboard/settings", roles: ['teacher'] },
-  
+  { icon: GraduationCap, label: "Gestão Sala",       href: "/dashboard/teacher",   roles: ['teacher'] },
+  { icon: Calendar,      label: "Meu Horário",        href: "/dashboard/horarios",  roles: ['teacher'] },
+  { icon: Settings,      label: "Configurações",      href: "/dashboard/settings",  roles: ['teacher'] },
+
   // Rotas do Aluno
-  { icon: Home, label: "Painel Aluno", href: "/dashboard/student", roles: ['student'] },
-  { icon: MessageSquare, label: "Mural de Recados", href: "/dashboard/mural", roles: ['student', 'teacher', 'admin'] },
-  { icon: FileText, label: "Atividades", href: "/dashboard/tasks", roles: ['student', 'teacher'] },
+  { icon: Home,         label: "Painel Aluno",    href: "/dashboard/student", roles: ['student'] },
+  { icon: MessageSquare, label: "Mural de Recados", href: "/dashboard/mural",   roles: ['student', 'teacher', 'admin'] },
+  { icon: FileText,     label: "Atividades",      href: "/dashboard/tasks",   roles: ['student', 'teacher'] },
 ];
 
 export default function Sidebar() {
