@@ -37,7 +37,8 @@ ENV HOSTNAME=0.0.0.0
 # next.config.js com output:'standalone' gera .next/standalone/
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+# pasta public é opcional — cria vazia se não existir
+RUN mkdir -p ./public
 
 EXPOSE 3002
 
